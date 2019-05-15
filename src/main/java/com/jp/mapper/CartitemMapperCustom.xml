@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jp.mapper.CartitemMapperCustom" >
+  <select id="getByUserId" parameterType="java.lang.Integer" 
+        resultType="com.jp.po.CartDetails">
+        select cartItem.cartitemid,book.lsbn,book.name,book.currprice,
+        	book.imageb,cartItem.num,(cartItem.num*book.currprice)as total 
+        from cartItem,book 
+        where cartItem.lsbn = book.lsbn 
+        and cartItem.userid = '${userid}'
+  </select>
+  
+  <select id="getByCartitemid" resultType="com.jp.po.CartDetails">
+        select cartItem.cartitemid,book.lsbn,book.name,book.currprice,
+        	book.imageb,cartItem.num,(cartItem.num*book.currprice)as total 
+        from cartItem,book 
+        where cartItem.lsbn = book.lsbn 
+        and cartItem.cartitemid in 
+        <foreach collection="cartitemid" item="id" index="index"  
+                         open="(" close=")" separator=",">  
+                    #{id}  
+        </foreach>  
+  </select>
+  
+  <select id="selectByLsbn" parameterType="java.lang.Integer" 
+        resultType="com.jp.po.Cartitem">
+        select * from cartitem
+        where lsbn = '${lsbn}'
+  </select>
+  
+  <insert id="insert" parameterType="com.jp.po.Cartitem" 
+      		useGeneratedKeys="true" keyProperty="cartitemid">
+    insert into cartitem (lsbn, userid, 
+      num)
+    values (#{lsbn,jdbcType=CHAR}, #{userid,jdbcType=INTEGER}, 
+      #{num,jdbcType=INTEGER})
+  </insert>	
+</mapper>
