@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jp.mapper.UserMapperCustom" >
+  <select id="selectByLoginnameAndPassword" parameterType="java.lang.String" 
+        resultType="com.jp.po.User">
+  		select * from user 
+  		WHERE loginname = '${loginname}' AND password = '${password}'
+  	</select>
+  	
+  <update id="updatePasswordByLoginname" parameterType="java.lang.String">
+      update user set password = #{newPassword}
+      where loginname = #{loginname}
+  </update>
+  
+  <select id="getUserList" parameterType="java.lang.String" 
+        resultType="com.jp.po.User">
+  		select * from user 
+  		<where>
+	        <if test="value!=null and value!=''">
+	            userid = '${value}' 
+	            or username LIKE '%${value}%'
+	            or loginname LIKE '%${value}%'
+	        </if>
+  		</where>
+  	</select>
+  	
+  <select id="selectByLoginname" resultType="com.jp.po.User">
+  		select count(*) from user 
+  		WHERE loginname = '${loginname}' 
+  </select>
+  
+</mapper>

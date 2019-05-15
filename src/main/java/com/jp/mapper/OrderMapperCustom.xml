@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jp.mapper.OrderMapperCustom" >
+  <resultMap id="OrderResultMap" type="com.jp.po.OrderCustom" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="orderid" property="orderid" jdbcType="VARCHAR" />
+    <result column="ordertime" property="ordertime" jdbcType="TIMESTAMP" />
+    <result column="userid" property="userid" jdbcType="INTEGER" />
+    <result column="username" property="username" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="CHAR" />
+    <result column="total" property="total" jdbcType="DOUBLE" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <collection property="bookList" javaType="ArrayList" column="orderid"
+        ofType="com.jp.po.BookCustom"
+        select="com.jp.mapper.BookMapperCustom.selectByOrderid"
+        fetchType="lazy">
+        <id column="lsbn" property="lsbn" jdbcType="CHAR" />
+	    <result column="orderBy" property="orderby" jdbcType="INTEGER" />
+	    <result column="name" property="name" jdbcType="VARCHAR" />
+	    <result column="type" property="type" jdbcType="VARCHAR" />
+	    <result column="author" property="author" jdbcType="VARCHAR" />
+	    <result column="price" property="price" jdbcType="DOUBLE" />
+	    <result column="currPrice" property="currprice" jdbcType="DOUBLE" />
+	    <result column="discount" property="discount" jdbcType="DOUBLE" />
+	    <result column="press" property="press" jdbcType="VARCHAR" />
+	    <result column="publishtime" property="publishtime" jdbcType="CHAR" />
+	    <result column="edition" property="edition" jdbcType="INTEGER" />
+	    <result column="pageNum" property="pagenum" jdbcType="INTEGER" />
+	    <result column="wordNum" property="wordnum" jdbcType="INTEGER" />
+	    <result column="printtime" property="printtime" jdbcType="CHAR" />
+	    <result column="booksize" property="booksize" jdbcType="INTEGER" />
+	    <result column="paper" property="paper" jdbcType="VARCHAR" />
+	    <result column="cid" property="cid" jdbcType="CHAR" />
+	    <result column="imageW" property="imagew" jdbcType="VARCHAR" />
+	    <result column="imageB" property="imageb" jdbcType="VARCHAR" />
+	    <result column="description" property="description" jdbcType="VARCHAR" />
+	    <result column="num" property="num" jdbcType="INTEGER" />
+    </collection>
+  </resultMap>
+  
+  <select id="selectByOrderid" resultMap="OrderResultMap" parameterType="java.lang.String" >
+    select * from orders
+    <where>
+	    <if test="orderid!=null and orderid!=''">
+	    	orderid like '%${orderid}%'
+	    </if>	
+    </where>
+    order by ordertime desc
+  </select>
+  
+  <select id="selectOrdersByUserid" resultMap="OrderResultMap" parameterType="java.lang.Integer" >
+    select * from orders
+    <if test="userid!=null and userid!=''">
+    	where userid = #{userid}
+   	</if>
+   	order by ordertime desc
+  </select>
+  
+  <select id="selectOrdersReceiveByUserid" resultMap="OrderResultMap" parameterType="java.lang.Integer" >
+   		select distinct orders.orderid,orders.ordertime,orders.status,orders.total,orders.username 
+   		from orders,orderitem,book 
+   		where book.lsbn=orderitem.lsbn and orders.orderid=orderitem.orderid 
+   		and book.userid=#{userid};
+  </select>
+  
+  <select id="selectOrdersByStatus" resultMap="OrderResultMap" parameterType="java.lang.String" >
+    select * from orders
+    <if test="status!=null and status!=''">
+    	where status = #{status}
+   	</if>
+   	order by ordertime desc
+  </select>
+</mapper>
