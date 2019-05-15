@@ -1,0 +1,10 @@
+*{font-size:10pt;}
+body{text-align:center;}
+.table{width:1200px;height:100%;border-collapse: collapse;}
+.table td{}
+.trTop {background: #ffffff;}
+.tdTop {text-align: center; height: 70px;}
+.tdLeft{width: 190px;padding:5px;}
+.tdSearch{height: 45px; border-bottom-width: 0px; padding: 0px; margin: 0px;}
+.tdBody{border-top-width: 0px;}
+iframe {width: 100%;height: 100%;}
