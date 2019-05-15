@@ -1,0 +1,86 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" 
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans.xsd 
+		http://www.springframework.org/schema/mvc 
+		http://www.springframework.org/schema/mvc/spring-mvc.xsd 
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context.xsd 
+		http://www.springframework.org/schema/util
+		http://www.springframework.org/schema/aop 
+		http://www.springframework.org/schema/aop/spring-aop.xsd 
+		http://www.springframework.org/schema/tx 
+		http://www.springframework.org/schema/tx/spring-tx.xsd ">
+	<!-- 组件扫描器扫描这一层组要扫描处理器 -->
+	<context:component-scan base-package="com.jp.controller"></context:component-scan>
+	<!-- 使用 mvc:annotation-driven代替上边注解映射器和注解适配器配置
+	mvc:annotation-driven默认加载很多的参数绑定方法，
+	比如json转换解析器就默认加载了，如果使用mvc:annotation-driven不用配置上边的RequestMappingHandlerMapping和RequestMappingHandlerAdapter
+	实际开发时使用mvc:annotation-driven
+	 -->
+	<!-- <mvc:annotation-driven conversion-service="conversionService"></mvc:annotation-driven> -->
+	<mvc:annotation-driven >
+	   	<!-- 设置不使用默认的消息转换器 -->
+        <mvc:message-converters register-defaults="false">
+        	<!-- 配置Spring的转换器 -->
+        	<bean class="org.springframework.http.converter.StringHttpMessageConverter"/>
+    		<bean class="org.springframework.http.converter.xml.XmlAwareFormHttpMessageConverter"/>
+    		<bean class="org.springframework.http.converter.ByteArrayHttpMessageConverter"/>
+    		<bean class="org.springframework.http.converter.BufferedImageHttpMessageConverter"/>
+            <!-- 配置fastjson中实现HttpMessageConverter接口的转换器 -->
+            <bean id="fastJsonHttpMessageConverter" 
+            	class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter">
+                <!-- 加入支持的媒体类型：返回contentType -->
+                <property name="supportedMediaTypes">
+                    <list>
+                        <!-- 这里顺序不能反，一定先写text/html,不然ie下会出现下载提示 -->
+                        <value>text/html;charset=UTF-8</value>
+                        <value>application/json;charset=UTF-8</value>
+                    </list>
+                </property>
+            </bean>
+        </mvc:message-converters>
+	</mvc:annotation-driven>
+	<!-- 处理静态资源问题 -->
+	<mvc:default-servlet-handler />
+	<!-- 配置视图解析器 -->
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/jsp/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+	
+	<bean id="multipartResolver" 
+   		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="defaultEncoding" value="UTF-8"/>
+        <property name="maxUploadSize" value="10485760"/>
+    </bean>
+	
+	<!-- 自定义参数绑定   转化器 -->
+	<!-- <bean id="conversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+		转换器
+		<property name="converters">
+			<list>
+				日期类型转换
+				<bean class="com.jp.converter.CustomDateConverter"/>
+				<bean class="com.jp.converter.CustomDateConverter"/>
+				...................
+			</list>
+		</property>	
+	</bean> -->
+	<!-- 自定义拦截器 -->
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/*"/>
+            <mvc:mapping path="/*/*"/>
+            <mvc:mapping path="/*/*/*"/>
+            <mvc:exclude-mapping path="/book_img/*"/>            
+            <bean class="com.jp.interceptor.AuthorizationInterceptor"></bean>
+        </mvc:interceptor>
+    </mvc:interceptors>
+</beans>

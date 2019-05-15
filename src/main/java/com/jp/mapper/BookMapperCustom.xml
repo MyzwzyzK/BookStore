@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jp.mapper.BookMapperCustom" >
+    <resultMap id="BookResultMap" type="com.jp.po.BookCustom" >
+    <id column="lsbn" property="lsbn" jdbcType="CHAR" />
+    <result column="orderBy" property="orderby" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="author" property="author" jdbcType="VARCHAR" />
+    <result column="price" property="price" jdbcType="DOUBLE" />
+    <result column="currPrice" property="currprice" jdbcType="DOUBLE" />
+    <result column="discount" property="discount" jdbcType="DOUBLE" />
+    <result column="press" property="press" jdbcType="VARCHAR" />
+    <result column="publishtime" property="publishtime" jdbcType="CHAR" />
+    <result column="edition" property="edition" jdbcType="INTEGER" />
+    <result column="pageNum" property="pagenum" jdbcType="INTEGER" />
+    <result column="wordNum" property="wordnum" jdbcType="INTEGER" />
+    <result column="printtime" property="printtime" jdbcType="CHAR" />
+    <result column="booksize" property="booksize" jdbcType="INTEGER" />
+    <result column="paper" property="paper" jdbcType="VARCHAR" />
+    <result column="cid" property="cid" jdbcType="CHAR" />
+    <result column="imageW" property="imagew" jdbcType="VARCHAR" />
+    <result column="imageB" property="imageb" jdbcType="VARCHAR" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+  </resultMap>
+    
+  	<sql id="query_book_where">
+        <if test="value!=null and value!=''">
+            lsbn LIKE '%${value}%' 
+            or name LIKE '%${value}%'
+            or type LIKE '%${value}%'
+        </if>
+    </sql>
+   
+    
+    <!-- 根据 lsbn编号，书名，或类型搜索 -->
+    <select id="queryBookList" parameterType="java.lang.String" 
+        resultType="com.jp.po.BookCustom">
+  		select * from book
+  		<where>
+  		    <include refid="query_book_where"></include>
+  		</where>
+  		order by orderBy desc
+  	</select>
+  	
+  	<select id="getBookListLimit" parameterType="java.lang.Integer" 
+        resultType="com.jp.po.BookCustom">
+  		select * from book 
+  		<if test="identity=='user'">
+  		    where userid = #{userid}
+		</if>
+  		order by orderBy desc limit #{startNum},#{num} 
+  	</select>
+  	
+  	
+  	<select id="getBookListLimitQuery"
+        resultType="com.jp.po.BookCustom">
+  		select * from book 
+  		<where>
+  		    lsbn like '%${lsbn_name_type}%'
+  		    or name like '%${lsbn_name_type}%'
+  		    or type like '%${lsbn_name_type}%'
+  		</where>
+  		order by orderBy desc limit #{startNum},#{num} 
+  	</select>
+  	
+  	<select id="getBookTotalCount"  resultType="java.lang.Integer">
+  		select count(*) from book
+  		<if test="identity=='user'">
+  		    where userid = #{userid}
+		</if>
+  	</select>
+  	
+  	<select id="getBookTotalCountQuery"  resultType="java.lang.Integer">
+  		select count(*) from book
+  		<where>
+  		    lsbn like '%${lsbn_name_type}%'
+  		    or name like '%${lsbn_name_type}%'
+  		    or type like '%${lsbn_name_type}%'
+  		</where>
+  	</select>
+  	
+  	<select id="selectByOrderid"  parameterType="java.lang.String"  resultType="com.jp.po.BookCustom">
+  		select * from book,orders,orderitem
+  		where book.lsbn = orderitem.lsbn
+  		and orders.orderid = orderitem.orderid 
+  		and orders.orderid = #{orderid}
+  	</select>
+</mapper>
