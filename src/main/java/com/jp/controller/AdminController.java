@@ -10,11 +10,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.jp.po.Admin;
 import com.jp.service.AdminService;
+<<<<<<< HEAD
 /**
  * 这里添加了一个注释，用于测试gitHub
  * @author Umbra
  *
  */
+=======
+
+>>>>>>> branch 'master' of https://github.com/MyzwzyzK/BookStore.git
 
 
 @Controller
